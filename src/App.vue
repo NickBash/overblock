@@ -2,9 +2,10 @@
   <div id="app">
     <div class="graf">
       <Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>
+      <p v-if="loaded"> {{ this.warning }} из {{ this.sum }} считают этот сайт опасным</p>
     </div>
     <input type="text" v-model="addres">
-    <button @click="go">Отправить</button>
+    <button @click="get">Отправить</button>
   </div>
 </template>
 
@@ -17,10 +18,13 @@ export default {
   name: 'app',
   data () {
     return {
-      addres: 'vk.com',
-      clean: '',
-      unrated: '',
-      warning: '',
+      kek: 'https://learn.javascript.ru/string',
+      scanUrl: '',
+      addres: '',
+      clean: 0,
+      unrated: 0,
+      warning: 0,
+      sum: null,
       loaded: false,
       datacoll: {
         labels: ["Нет данных"],
@@ -57,22 +61,30 @@ export default {
     }
   },
   methods: {
-    go() {
-      let addr = this.addres;
-      axios.post('http://localhost/api/post-url-scan', {
-        url: addr,
-        apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
-        crossDomain: true,
-      })
-        .then(response => {
-          let data = JSON.parse(response.data);
-          if (data.response_code == 1) {
+    clearUrl() {
+      let non = this.kek.indexOf('/', kek.indexOf('/') + 2) + 1;
+      let str = this.kek.substring(0, non);
+      console.log(str);
+    },
+    getUrl(url) {
+      if (url) {
+        axios.post('http://localhost/api/post-url-scan', {
+          url: url,
+          apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
+          crossDomain: true,
+        })
+          .then(response => {
+            let data = JSON.parse(response.data);
+            if (data.response_code == 1) {
               axios.post('http://localhost/api/post-url-report', {
-                  url: addr,
-                  apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
-                  crossDomain: true,
-            })
+                url: url,
+                apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
+                crossDomain: true,
+              })
                 .then(response => {
+                  this.sum = response.data.clean + response.data.warning + response.data.unrated;
+                  this.warning = response.data.warning;
+                  this.loaded = true;
                   this.datacoll = {
                     labels: ["Безопасная", "Опасная", "Нет результатов"],
                     datasets: [{
@@ -87,18 +99,42 @@ export default {
                   };
                 })
                 .catch(error => {
-                    console.log(error)
+                  console.log(error)
                 })
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+      } else {
+        console.log("no -> ")
+      }
+
     }
+  },
+  mounted() {
+
+  },
+  created() {
+    // chrome.tabs.getSelected(null, (tab) => {
+    //   if (tab.url.length !== 0 && tab.url !== null && tab.url !== 'chrome://newtab/') {
+    //     this.scanUrl = tab.url.hostname;
+    //     console.log(this.scanUrl);
+    //     this.getUrl(this.scanUrl);
+    //   }
+    // });
+    // chrome.tabs.query(queryInfo, (tab) => {
+    //     console.log(tab);
+    //     console.log(queryInfo);
+    // });
+    // var tabId;
+    // chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    //   console.log(tabs[0].url);
+    // });
   },
   components: {
     Doughnut
-  },
+  }
 }
 
 
