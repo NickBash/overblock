@@ -1,30 +1,35 @@
 <template>
   <div id="app">
-    <div v-if="loaded" class="cssload-thecube">
-      <div class="spinner">
-        <div class="rect1"></div>
-        <div class="rect2"></div>
-        <div class="rect3"></div>
-        <div class="rect4"></div>
-        <div class="rect5"></div>
-      </div>
-    </div>
     <div>
-        <h2>Скан web-ресурса</h2>
-        <div>
-          <h3 v-if="!safeBrow" class="text-g">Безопасен</h3>
-          <h3 v-else class="text-w">Опасен</h3>
-        </div>
-        <a class="analysis" href="#">Провести полный анализ?</a>
-      <h1>{{ safeBrow }}</h1>
+        <transition name="fade" mode="out-in">
+          <div v-if="select == 1" key="1">
+            <h2>Скан web-ресурса</h2>
+            <div>
+              <h3 v-if="!safeBrow" class="text-g">Безопасен</h3>
+              <h3 v-else class="text-w">Опасен</h3>
+            </div>
+            <a class="analysis" @click="selectCheck" href="#">Провести полный анализ?</a>
+            <h1>{{ safeBrow }}</h1>
+          </div>
+          <div v-if="select == 2" key="2" class="cssload-thecube">
+            <div class="spinner">
+              <div class="rect1"></div>
+              <div class="rect2"></div>
+              <div class="rect3"></div>
+              <div class="rect4"></div>
+              <div class="rect5"></div>
+            </div>
+          </div>
+          <div v-if="select == 3" key="3" class="graf">
+            <Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>
+            <p> {{ this.warning }} из {{ this.sum }} источников считают этот сайт опасным</p>
+          </div>
+        </transition>
     </div>
-    <!--<div v-if="loaded" class="graf">-->
-      <!--<Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>-->
-      <!--<p> {{ this.warning }} из {{ this.sum }} источников считают этот сайт опасным</p>-->
-    <!--</div>-->
+
 
     <!--<input type="text">-->
-    <!--<button @click="getUrlYandex">Отправить</button>-->
+    <!--<button @click="show == true">Отправить</button>-->
   </div>
 </template>
 
@@ -37,13 +42,14 @@ export default {
   name: 'app',
   data () {
     return {
+      select: 1,
       safeBrow: false,
+      scanUrl: '',
       scanUrlFull: '',
       clean: 0,
       unrated: 0,
       warning: 0,
       sum: null,
-      loaded: false,
       datacoll: '',
       options: {
         responsive: true,
@@ -94,9 +100,9 @@ export default {
           console.log(error);
         })
     },
-    getUrl() {
+    getUrl(url) {
         axios.post('http://ovapi.ovd.su/api/post-url-scan', {
-          url: 'next-money.info',
+          url: url,
           apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
           crossDomain: true,
         })
@@ -104,14 +110,15 @@ export default {
             let data = JSON.parse(response.data);
             if (data.response_code == 1) {
               axios.post('http://ovapi.ovd.su/api/post-url-report', {
-                url: 'next-money.info',
+                url: url,
                 apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
                 crossDomain: true,
               })
                 .then(response => {
                   this.sum = response.data.clean + response.data.warning + response.data.unrated;
                   this.warning = response.data.warning;
-                  this.loaded = true;
+                  this.select = 3;
+                  console.log(' Супер');
                   this.datacoll = {
                     labels: ["Безопасная", "Опасная", "Нет результатов"],
                     datasets: [{
@@ -126,7 +133,7 @@ export default {
                   };
                 })
                 .catch(error => {
-                  console.log(error)
+                  console.log(error);
                 })
             }
           })
@@ -134,10 +141,16 @@ export default {
             console.log(error);
           })
 
+    },
+    selectCheck() {
+      this.select = 2;
+      this.getUrl(this.scanUrl);
+
     }
   },
   created() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      this.scanUrl = tabs[0].url;
       this.getUrlYandex(this.clearUrl(tabs[0].url));
     });
   },
@@ -152,13 +165,22 @@ export default {
 <style>
 #app {
   font-family: 'Roboto', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
   margin-top: 20px;
   min-width: 280px;
   max-width: 300px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  opacity: 0;
+}
+
+.graf {
+  padding: 0 20px;
 }
 
 h1, h2 {
