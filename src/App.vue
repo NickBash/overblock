@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div v-if="!loaded" class="cssload-thecube">
+    <div v-if="loaded" class="cssload-thecube">
       <div class="spinner">
         <div class="rect1"></div>
         <div class="rect2"></div>
@@ -9,13 +9,22 @@
         <div class="rect5"></div>
       </div>
     </div>
-    <div v-if="loaded" class="graf">
-      <Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>
-      <p> {{ this.warning }} из {{ this.sum }} источников считают этот сайт опасным</p>
+    <div>
+        <h2>Скан web-ресурса</h2>
+        <div>
+          <h3 v-if="!safeBrow" class="text-g">Безопасен</h3>
+          <h3 v-else class="text-w">Опасен</h3>
+        </div>
+        <a class="analysis" href="#">Провести полный анализ?</a>
+      <h1>{{ safeBrow }}</h1>
     </div>
+    <!--<div v-if="loaded" class="graf">-->
+      <!--<Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>-->
+      <!--<p> {{ this.warning }} из {{ this.sum }} источников считают этот сайт опасным</p>-->
+    <!--</div>-->
 
-    <input type="text" v-model="addres">
-    <button @click="getUrl">Отправить</button>
+    <!--<input type="text">-->
+    <!--<button @click="getUrlYandex">Отправить</button>-->
   </div>
 </template>
 
@@ -28,7 +37,8 @@ export default {
   name: 'app',
   data () {
     return {
-      scanUrl: '',
+      safeBrow: false,
+      scanUrlFull: '',
       clean: 0,
       unrated: 0,
       warning: 0,
@@ -53,21 +63,40 @@ export default {
         },
         title: {
           display: true,
-          text: 'Сканирование web-страницы'
+          text: 'Результаты сканирования VirusTotal'
         }
       }
 
     }
   },
   methods: {
-    // clearUrl() {
-    //   let non = this.kek.indexOf('/', kek.indexOf('/') + 2) + 1;
-    //   let str = this.kek.substring(0, non);
-    //   console.log(str);
-    // },
+    clearUrl(scan) {
+      let non = scan.indexOf('/', scan.indexOf('/') + 2) + 1;
+      let str = scan.substring(0, non);
+      return str;
+    },
+    getUrlYandex(safe) {
+      axios.post('http://localhost/api/post-url-scan-yandex', {
+        url: safe,
+        apikey: '',
+        crossDomain: true,
+      })
+        .then(response => {
+          let data = JSON.parse(response.data);
+          if (data == false) {
+            this.safeBrow = false;
+            console.log('Ok');
+          } else {
+            this.safeBrow = true;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+    },
     getUrl() {
         axios.post('http://ovapi.ovd.su/api/post-url-scan', {
-          url: 'https://learn.javascript.ru/string',
+          url: 'next-money.info',
           apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
           crossDomain: true,
         })
@@ -75,7 +104,7 @@ export default {
             let data = JSON.parse(response.data);
             if (data.response_code == 1) {
               axios.post('http://ovapi.ovd.su/api/post-url-report', {
-                url: 'https://learn.javascript.ru/string',
+                url: 'next-money.info',
                 apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
                 crossDomain: true,
               })
@@ -108,21 +137,9 @@ export default {
     }
   },
   created() {
-    // chrome.tabs.getSelected(null, (tab) => {
-    //   if (tab.url.length !== 0 && tab.url !== null && tab.url !== 'chrome://newtab/') {
-    //     this.scanUrl = tab.url.hostname;
-    //     console.log(this.scanUrl);
-    //     this.getUrl(this.scanUrl);
-    //   }
-    // });
-    // chrome.tabs.query(queryInfo, (tab) => {
-    //     console.log(tab);
-    //     console.log(queryInfo);
-    // });
-    // var tabId;
-    // chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    //   console.log(tabs[0].url);
-    // });
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      this.getUrlYandex(this.clearUrl(tabs[0].url));
+    });
   },
   components: {
     Doughnut
@@ -134,40 +151,53 @@ export default {
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 20px;
+  min-width: 280px;
+  max-width: 300px;
 }
 
 h1, h2 {
   font-weight: normal;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+a{
+  text-decoration: none;
 }
 
-li {
+.text-g {
+  color: white;
+  background: rgb(66, 184, 131);
+  padding: 5px 5px;
+  border-radius: 5px;
+  margin: 20px 30px;
+}
+
+.text-w {
+  color: white;
+  background: rgb(255, 49, 57);
+  padding: 5px 5px;
+  border-radius: 5px;
+  margin: 20px 30px;
+}
+
+.analysis {
+  color: gray;
   display: inline-block;
-  margin: 0 10px;
+  border: 1px solid gray;
+  padding: 8px 20px;
+  border-radius: 5px;
+  margin: 0px 30px 20px;
+  transition: .3s;
 }
 
-a {
-  color: #42b983;
-}
-
-#app {
-  margin-top: 20px;
-  min-width: 280px;
-  max-width: 300px;
-}
-
-.graf {
-  padding: 0 30px;
+.analysis:hover {
+  background: gray;
+  color: white;
 }
 
 .spinner {
