@@ -82,16 +82,19 @@ export default {
       return str;
     },
     getUrlYandex(safe) {
-      axios.post('http://localhost/api/post-url-scan-yandex', {
+      console.log(safe)
+      axios.post('http://ovapi.ovd.su/api/post-url-scan-yandex', {
         url: safe,
         apikey: '',
         crossDomain: true,
       })
         .then(response => {
-          let data = JSON.parse(response.data);
+          console.log(response);
+          let data = (response.data);
+          console.log(data[0]);
           if (data == false) {
             this.safeBrow = false;
-            console.log('Ok');
+            console.log('Ok, безопасен');
           } else {
             this.safeBrow = true;
           }
