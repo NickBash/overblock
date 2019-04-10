@@ -81,11 +81,10 @@ export default {
       let str = scan.substring(0, non);
       return str;
     },
-    getUrlYandex(safe) {
+    getUrlGoogle(safe) {
       console.log(safe)
-      axios.post('http://ovapi.ovd.su/api/post-url-scan-yandex', {
+      axios.post('ovapi.ovd.su/api/post-url-scan-google', {
         url: safe,
-        apikey: '',
         crossDomain: true,
       })
         .then(response => {
@@ -104,7 +103,7 @@ export default {
         })
     },
     getUrl(url) {
-        axios.post('http://ovapi.ovd.su/api/post-url-scan', {
+        axios.post('ovapi.ovd.su/api/post-url-scan', {
           url: url,
           apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
           crossDomain: true,
@@ -112,7 +111,7 @@ export default {
           .then(response => {
             let data = JSON.parse(response.data);
             if (data.response_code == 1) {
-              axios.post('http://ovapi.ovd.su/api/post-url-report', {
+              axios.post('ovapi.ovd.su/api/post-url-report', {
                 url: url,
                 apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
                 crossDomain: true,
@@ -154,7 +153,7 @@ export default {
   created() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       this.scanUrl = tabs[0].url;
-      this.getUrlYandex(this.clearUrl(tabs[0].url));
+      this.getUrlGoogle(this.clearUrl(tabs[0].url));
     });
   },
   components: {
