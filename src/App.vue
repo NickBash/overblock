@@ -90,9 +90,9 @@ export default {
       })
         .then(response => {
           console.log(response);
-          let data = (response.data);
-          console.log(data[0]);
-          if (data == false) {
+          let data = (response.data[0]);
+          console.log(data);
+          if (data == "clean") {
             this.safeBrow = false;
             console.log('Ok, безопасен');
           } else {
