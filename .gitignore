@@ -4,7 +4,8 @@ node_modules/
 dist/
 npm-debug.log
 yarn-error.log
-diplom-project/
+diplom-project/.idea/
+diplom-project/dist/
 
 # Editor directories and files
 .idea
