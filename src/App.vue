@@ -5,7 +5,7 @@
           <div v-if="select == 1" key="1">
             <h2>Скан web-ресурса</h2>
             <div>
-              <h3 v-if="!safeBrow" class="text-g">Безопасен</h3>
+              <h3 :class="[text_class]">{{ googleScan }}</h3>
               <h3 v-else class="text-w">Опасен</h3>
             </div>
             <a class="analysis" @click="selectCheck" href="#">Провести полный анализ?</a>
@@ -26,6 +26,7 @@
           </div>
         </transition>
     </div>
+    <button @click="OK">OK</button>
 
 
     <!--<input type="text">-->
@@ -42,8 +43,9 @@ export default {
   name: 'app',
   data () {
     return {
+      googleScan: 'Нет информации',
       select: 1,
-      safeBrow: false,
+      text_class: 'text_n',
       scanUrl: '',
       scanUrlFull: '',
       clean: 0,
@@ -76,34 +78,44 @@ export default {
     }
   },
   methods: {
+    OK() {
+      chrome.storage.sync.get(['https://developer.chrome.com/'], function(result) {
+        console.log('Value currently is ' + result.key);
+      });
+    },
     clearUrl(scan) {
       let non = scan.indexOf('/', scan.indexOf('/') + 2) + 1;
       let str = scan.substring(0, non);
       return str;
     },
-    getUrlGoogle(safe) {
-      console.log(safe)
-      axios.post('ovapi.ovd.su/api/post-url-scan-google', {
-        url: safe,
-        crossDomain: true,
-      })
-        .then(response => {
-          console.log(response);
-          let data = (response.data[0]);
-          console.log(data);
-          if (data == "clean") {
-            this.safeBrow = false;
-            console.log('Ok, безопасен');
-          } else {
-            this.safeBrow = true;
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-    },
+    // getUrlGoogle(safe) {
+    //   console.log(safe)
+    //   axios.post('http://ovapi.ovd.su/api/post-url-scan-google', {
+    //     url: safe,
+    //     crossDomain: true,
+    //   })
+    //     .then(response => {
+    //       console.log(response);
+    //       let data = (response.data);
+    //       console.log(data);
+    //       if (data == "Безопасно!") {
+    //         this.googleScan = data;
+    //         this.text_class = 'text_g';
+    //         console.log('Ok, безопасен');
+    //       } else if (data == 'Фишинговый сайт!' || data == 'Нежелательное программное обеспечение!') {
+    //         this.googleScan = data;
+    //         this.text_class = 'text_y'
+    //       } else {
+    //         this.googleScan = 'Вредоносный!';
+    //         this.text_class = 'text_w';
+    //       }
+    //     })
+    //     .catch(function (error) {
+    //       console.log(error);
+    //     })
+    // },
     getUrl(url) {
-        axios.post('ovapi.ovd.su/api/post-url-scan', {
+        axios.post('http://ovapi.ovd.su/api/post-url-scan', {
           url: url,
           apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
           crossDomain: true,
@@ -111,7 +123,7 @@ export default {
           .then(response => {
             let data = JSON.parse(response.data);
             if (data.response_code == 1) {
-              axios.post('ovapi.ovd.su/api/post-url-report', {
+              axios.post('http://ovapi.ovd.su/api/post-url-report', {
                 url: url,
                 apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
                 crossDomain: true,
@@ -151,10 +163,21 @@ export default {
     }
   },
   created() {
+    chrome.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+        // console.log(sender.tab ?
+        //   "from a content script:" + sender.tab.url :
+        //   "from the extension");
+        // console.log(request)
+        // chrome.storage.local.get([this.clearUrl(tabs[0].url)], function(result) {
+        //   console.log('Value currently is ' + result.key);
+        // });
+        // this.getUrlGoogle(this.clearUrl(tabs[0].url));
+      }),
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       this.scanUrl = tabs[0].url;
-      this.getUrlGoogle(this.clearUrl(tabs[0].url));
-    });
+
+    })
   },
   components: {
     Doughnut
@@ -193,7 +216,15 @@ a{
   text-decoration: none;
 }
 
-.text-g {
+.text_n {
+  color: white;
+  background: gray;
+  padding: 5px 5px;
+  border-radius: 5px;
+  margin: 20px 30px;
+}
+
+.text_g {
   color: white;
   background: rgb(66, 184, 131);
   padding: 5px 5px;
@@ -201,9 +232,17 @@ a{
   margin: 20px 30px;
 }
 
-.text-w {
+.text_w {
   color: white;
   background: rgb(255, 49, 57);
+  padding: 5px 5px;
+  border-radius: 5px;
+  margin: 20px 30px;
+}
+
+.text_y {
+  color: white;
+  background: #deac16;
   padding: 5px 5px;
   border-radius: 5px;
   margin: 20px 30px;

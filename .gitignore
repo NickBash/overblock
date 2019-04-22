@@ -1,8 +1,10 @@
 .DS_Store
 node_modules/
+.idea/
 dist/
 npm-debug.log
 yarn-error.log
+diplom-project/
 
 # Editor directories and files
 .idea
