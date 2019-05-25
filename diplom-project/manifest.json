@@ -2,8 +2,8 @@
   "manifest_version": 2,
   "name": "Overblocks Experimental",
   "description": "Limited experimental edition of the guard of your nervous system.",
-  "version": "0.0.1",
-  "author": "OVERDAYS LLC",
+  "version": "1.0.1",
+  "author": "Nikita Bashkankov",
   "icons": {"128": "img/icon_128.png"},
   "browser_action": {
     "default_title": "OverBlocks",

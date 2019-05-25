@@ -3,6 +3,10 @@ var sait = location.hostname;
 chrome.runtime.sendMessage({site:sait}); // отправка сообщения на background.js
 
 
+
+
+
+
 //window.onfocus = onFocus; // если окно приобретает фокус
 // function sec() //выполняется каждую секунду
 // {

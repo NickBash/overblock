@@ -23,23 +23,35 @@ chrome.runtime.onMessage.addListener(
           console.log(data);
           if (data == "Безопасно!") {
             chrome.storage.local.set({[a]: data}, function() {
-              console.log('Value is set to ' + data);
+              console.log('Записано ' + data);
+              chrome.browserAction.setBadgeText({text: "+"});
+              chrome.browserAction.setBadgeBackgroundColor({color:'green'});
               chrome.storage.local.get([a], function(result) {
-                console.log('Value currently is ' + result.key);
+                var arr = [];
+                for(let i in result) {
+                  arr[i] = result[i];
+                }
+                console.log(arr[a]);
               });
             });
-            // chrome.runtime.sendMessage({status: data}, function(response) {
-            //   console.log(response + 'background');
-            // });
-            // this.googleScan = data;
-            // this.text_class = 'text_g';
             console.log('Ok, безопасен');
           } else if (data == 'Фишинговый сайт!' || data == 'Нежелательное программное обеспечение!') {
-            this.googleScan = data;
-            this.text_class = 'text_y'
+
+            chrome.storage.local.set({[a]: data}, function() {
+              console.log('Плохой сайт ' + data);
+            });
+            chrome.browserAction.setBadgeText({text: "-"});
+            chrome.browserAction.setBadgeBackgroundColor({color:'yellow'});
+
           } else {
-            this.googleScan = 'Вредоносный!';
-            this.text_class = 'text_w';
+
+            data = 'Вредоносный!';
+            chrome.storage.local.set({[a]: data}, function() {
+              console.log('Плохой сайт ' + data);
+            });
+            chrome.browserAction.setBadgeText({text: "-"});
+            chrome.browserAction.setBadgeBackgroundColor({color:'red'});
+
           }
         })
         .catch(function (error) {
@@ -49,5 +61,3 @@ chrome.runtime.onMessage.addListener(
     getUrlGoogle(url);
 });
 
-chrome.browserAction.setBadgeText({text: "+"});
-chrome.browserAction.setBadgeBackgroundColor({color:'green'});

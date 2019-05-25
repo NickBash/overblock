@@ -163,20 +163,32 @@ export default {
     }
   },
   created() {
-    chrome.runtime.onMessage.addListener(
-      function(request, sender, sendResponse) {
-        // console.log(sender.tab ?
-        //   "from a content script:" + sender.tab.url :
-        //   "from the extension");
-        // console.log(request)
-        // chrome.storage.local.get([this.clearUrl(tabs[0].url)], function(result) {
-        //   console.log('Value currently is ' + result.key);
-        // });
-        // this.getUrlGoogle(this.clearUrl(tabs[0].url));
-      }),
+    // chrome.runtime.onMessage.addListener(
+    //   function(request, sender, sendResponse) {
+    //     // console.log(sender.tab ?
+    //     //   "from a content script:" + sender.tab.url :
+    //     //   "from the extension");
+    //     // console.log(request)
+    //     // chrome.storage.local.get([this.clearUrl(tabs[0].url)], function(result) {
+    //     //   console.log('Value currently is ' + result.key);
+    //     // });
+    //     // this.getUrlGoogle(this.clearUrl(tabs[0].url));
+    //   }),
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       this.scanUrl = tabs[0].url;
-
+      console.log(tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1));
+      chrome.storage.local.get([tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1)], function(result) {
+        function pop(result) {
+          console.log(result);
+          var arr = [];
+          for(let i in result) {
+            // arr[i] = result[i];
+            arr.push(result[i]);
+          }
+          console.log(arr);
+        }
+        pop(result);
+      })
     })
   },
   components: {
@@ -200,7 +212,7 @@ export default {
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
 
