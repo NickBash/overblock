@@ -6,9 +6,8 @@
             <div v-if="select == 1" key="1">
               <h2 class="title"><img class="logo" src="./assets/img/protection_128.png" alt=""><span class="title_t">Overblock</span><a
                 href="#"><img class="setting" src="./assets/img/settings.png" alt=""></a></h2>
-              <div>
-                <h3 style="text-align: center" :class="[text_class]">{{ googleScan }}</h3>
-              </div>
+              <div id="count">
+                <h3 id="sc1" style="text-align: center" :class="[text_class]">{{ googleScan }}</h3>
               </div>
               <a class="analysis" @click="selectCheck" href="#"><b>Провести полный анализ</b></a>
               <h1>{{ safeBrow }}</h1>
@@ -29,8 +28,7 @@
           </div>
         </transition>
     </div>
-    <!--<input type="text">-->
-    <!--<button @click="show == true">Отправить</button>-->
+    <p>{{stat }}</p>
   </div>
 </template>
 
@@ -43,11 +41,13 @@ export default {
   name: 'app',
   data () {
     return {
+      stat: '',
       googleScan: 'Нет информации',
       select: 1,
       text_class: 'text_n',
       scanUrl: '',
       scanUrlFull: '',
+      content_url: '',
       clean: 0,
       unrated: 0,
       warning: 0,
@@ -78,11 +78,6 @@ export default {
     }
   },
   methods: {
-    OK() {
-      chrome.storage.sync.get(['https://developer.chrome.com/'], function(result) {
-        console.log('Value currently is ' + result.key);
-      });
-    },
     clearUrl(scan) {
       let non = scan.indexOf('/', scan.indexOf('/') + 2) + 1;
       let str = scan.substring(0, non);
@@ -162,33 +157,48 @@ export default {
 
     }
   },
-  created() {
-    // chrome.runtime.onMessage.addListener(
-    //   function(request, sender, sendResponse) {
-    //     // console.log(sender.tab ?
-    //     //   "from a content script:" + sender.tab.url :
-    //     //   "from the extension");
-    //     // console.log(request)
-    //     // chrome.storage.local.get([this.clearUrl(tabs[0].url)], function(result) {
-    //     //   console.log('Value currently is ' + result.key);
-    //     // });
-    //     // this.getUrlGoogle(this.clearUrl(tabs[0].url));
-    //   }),
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      this.scanUrl = tabs[0].url;
-      console.log(tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1));
-      chrome.storage.local.get([tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1)], function(result) {
-        function pop(result) {
-          console.log(result);
-          var arr = [];
-          for(let i in result) {
-            // arr[i] = result[i];
-            arr.push(result[i]);
+  mounted() {
+
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
+        // console.log(response.farewell);
+        chrome.storage.local.get(['overblock'], function(result) {
+          let status = result.overblock.find(arr => arr.url === response.farewell).status;
+          console.log(status)
+          if (status === 1) {
+            document.getElementById('sc1').remove();
+            document.getElementById('count').innerHTML = `
+                <h3 id="sc1" style="text-align: center" class="text_g">Безопасно!</h3>
+            `;
+          } else if(status === 2) {
+            document.getElementById('sc1').remove();
+            document.getElementById('count').innerHTML = `
+                <h3 id="sc1" style="text-align: center" class="text_y">Нежелательное ПО!</h3>
+            `;
+          } else if(status === 3) {
+            document.getElementById('sc1').remove();
+          document.getElementById('count').innerHTML = `
+                <h3 id="sc1" style="text-align: center" class="text_w">Опасность!</h3>
+            `;
+          } else {
+            document.getElementById('sc1').remove();
+            document.getElementById('count').innerHTML = `
+                <h3 id="sc1" style="text-align: center" class="text_n">Нет данных</h3>
+            `;
           }
-          console.log(arr);
-        }
-        pop(result);
-      })
+
+        });
+      });
+    });
+
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      this.scanUrl = tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1);
+
+
+
+      // chrome.storage.local.get([tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1)], function(result) {
+      //
+      // })
     })
   },
   components: {

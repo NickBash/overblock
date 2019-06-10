@@ -1,8 +1,27 @@
 var sait = location.hostname;
+let sait1 = sait.toString();
 
-chrome.runtime.sendMessage({site:sait}); // отправка сообщения на background.js
+chrome.runtime.sendMessage({site:sait});
+// отправка сообщения на background.js
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+      "from a content script:" + sender.tab.url :
+      "from the extension");
+    if (request.greeting == "hello")
+      sendResponse({farewell: sait});
+  });
 
 
+
+// chrome.runtime.onConnect.addListener(function(port) {
+//   console.assert(port.name == "address");
+//   port.onMessage.addListener(function(msg) {
+//     if (msg.joke == "url")
+//       port.postMessage({url: sait});
+//   });
+// });
 
 
 

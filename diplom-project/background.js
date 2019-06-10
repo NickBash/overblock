@@ -18,37 +18,46 @@ chrome.runtime.onMessage.addListener(
         crossDomain: true,
       })
         .then(response => {
-          console.log(response);
           let data = (response.data);
-          console.log(data);
+          let d = [];
           if (data == "Безопасно!") {
-            chrome.storage.local.set({[a]: data}, function() {
-              console.log('Записано ' + data);
-              chrome.browserAction.setBadgeText({text: "+"});
-              chrome.browserAction.setBadgeBackgroundColor({color:'green'});
-              chrome.storage.local.get([a], function(result) {
-                var arr = [];
-                for(let i in result) {
-                  arr[i] = result[i];
-                }
-                console.log(arr[a]);
-              });
-            });
-            console.log('Ok, безопасен');
-          } else if (data == 'Фишинговый сайт!' || data == 'Нежелательное программное обеспечение!') {
+            chrome.storage.local.get(['overblock'], function(result) {
+              if (result.overblock.length > 0) {
 
-            chrome.storage.local.set({[a]: data}, function() {
-              console.log('Плохой сайт ' + data);
+                let n = result.overblock.push({status: 1, url: a})
+
+                chrome.storage.local.set({overblock: n}, function() {});
+
+                chrome.browserAction.setBadgeText({text: "+"});
+                chrome.browserAction.setBadgeBackgroundColor({color:'green'});
+                console.log('первое')
+                console.log(result.overblock.length)
+              } else {
+                d.push({status: 1, url: a})
+                chrome.storage.local.set({overblock: d}, function() {});
+
+                chrome.browserAction.setBadgeText({text: "+"});
+                chrome.browserAction.setBadgeBackgroundColor({color:'green'});
+                console.log('второе')
+                console.log(result.overblock.length)
+              }
             });
+
+            console.log('Ok, безопасен');
+
+          } else if (data == 'Фишинговый сайт!' || data == 'Нежелательное программное обеспечение!') {
+            d.push({status: 2, url: a})
+
+            chrome.storage.local.set({overblock: d}, function() {});
+
             chrome.browserAction.setBadgeText({text: "-"});
             chrome.browserAction.setBadgeBackgroundColor({color:'yellow'});
 
           } else {
+            d.push({status: 3, url: a})
 
-            data = 'Вредоносный!';
-            chrome.storage.local.set({[a]: data}, function() {
-              console.log('Плохой сайт ' + data);
-            });
+            chrome.storage.local.set({overblock: d}, function() {});
+
             chrome.browserAction.setBadgeText({text: "-"});
             chrome.browserAction.setBadgeBackgroundColor({color:'red'});
 
