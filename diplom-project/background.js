@@ -21,42 +21,90 @@ chrome.runtime.onMessage.addListener(
           let data = (response.data);
           let d = [];
           if (data == "Безопасно!") {
-            chrome.storage.local.get(['overblock'], function(result) {
-              if (result.overblock.length > 0) {
 
-                let n = result.overblock.push({status: 1, url: a})
+              if (localStorage.getItem('overblock') != null) {
 
-                chrome.storage.local.set({overblock: n}, function() {});
+                let g = JSON.parse(localStorage.getItem('overblock'))
+
+                console.log(g)
+
+                let n = {status: 1, url: a}
+
+                g.push(n)
+
+                localStorage.setItem('overblock', JSON.stringify(g))
 
                 chrome.browserAction.setBadgeText({text: "+"});
                 chrome.browserAction.setBadgeBackgroundColor({color:'green'});
                 console.log('первое')
-                console.log(result.overblock.length)
               } else {
                 d.push({status: 1, url: a})
-                chrome.storage.local.set({overblock: d}, function() {});
+                localStorage.setItem('overblock', JSON.stringify(d))
 
                 chrome.browserAction.setBadgeText({text: "+"});
                 chrome.browserAction.setBadgeBackgroundColor({color:'green'});
                 console.log('второе')
-                console.log(result.overblock.length)
               }
-            });
 
-            console.log('Ok, безопасен');
+            // chrome.storage.local.get(['overblock'], function(result) {
+            //   if (result.overblock.length > 0) {
+            //
+            //     let n = result.overblock.push({status: 1, url: a})
+            //
+            //     chrome.storage.local.set({overblock: n}, function() {});
+            //
+            //     chrome.browserAction.setBadgeText({text: "+"});
+            //     chrome.browserAction.setBadgeBackgroundColor({color:'green'});
+            //     console.log('первое')
+            //     console.log(result.overblock.length)
+            //   } else {
+            //     d.push({status: 1, url: a})
+            //     chrome.storage.local.set({overblock: d}, function() {});
+            //
+            //     chrome.browserAction.setBadgeText({text: "+"});
+            //     chrome.browserAction.setBadgeBackgroundColor({color:'green'});
+            //     console.log('второе')
+            //     console.log(result.overblock.length)
+            //   }
+            // });
 
           } else if (data == 'Фишинговый сайт!' || data == 'Нежелательное программное обеспечение!') {
-            d.push({status: 2, url: a})
 
-            chrome.storage.local.set({overblock: d}, function() {});
+            if (localStorage.getItem('overblock') != null) {
+
+              let g = JSON.parse(localStorage.getItem('overblock'))
+
+              console.log(g)
+
+              let n = {status: 2, url: a}
+
+              g.push(n)
+
+              localStorage.setItem('overblock', JSON.stringify(g))
+
+            } else {
+              d.push({status: 2, url: a})
+              localStorage.setItem('overblock', JSON.stringify(d))
+            }
 
             chrome.browserAction.setBadgeText({text: "-"});
             chrome.browserAction.setBadgeBackgroundColor({color:'yellow'});
 
           } else {
-            d.push({status: 3, url: a})
 
-            chrome.storage.local.set({overblock: d}, function() {});
+            if (localStorage.getItem('overblock') != null) {
+
+              let g = JSON.parse(localStorage.getItem('overblock'))
+
+              let n = {status: 3, url: a}
+
+              g.push(n)
+
+              localStorage.setItem('overblock', JSON.stringify(g))
+            } else {
+              d.push({status: 2, url: a})
+              localStorage.setItem('overblock', JSON.stringify(d))
+            }
 
             chrome.browserAction.setBadgeText({text: "-"});
             chrome.browserAction.setBadgeBackgroundColor({color:'red'});

@@ -161,21 +161,27 @@ export default {
 
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"}, function(response) {
-        // console.log(response.farewell);
-        chrome.storage.local.get(['overblock'], function(result) {
-          let status = result.overblock.find(arr => arr.url === response.farewell).status;
+        let result = JSON.parse(localStorage.getItem('overblock'))
+        console.log(result)
+        console.log(response.farewell)
+        let status
+          if (result) {
+            status = result.find(arr => arr.url == response.farewell).status;
+          } else {
+            status = 4
+          }
           console.log(status)
-          if (status === 1) {
+          if (status == 1) {
             document.getElementById('sc1').remove();
             document.getElementById('count').innerHTML = `
                 <h3 id="sc1" style="text-align: center" class="text_g">Безопасно!</h3>
             `;
-          } else if(status === 2) {
+          } else if(status == 2) {
             document.getElementById('sc1').remove();
             document.getElementById('count').innerHTML = `
                 <h3 id="sc1" style="text-align: center" class="text_y">Нежелательное ПО!</h3>
             `;
-          } else if(status === 3) {
+          } else if(status == 3) {
             document.getElementById('sc1').remove();
           document.getElementById('count').innerHTML = `
                 <h3 id="sc1" style="text-align: center" class="text_w">Опасность!</h3>
@@ -186,19 +192,12 @@ export default {
                 <h3 id="sc1" style="text-align: center" class="text_n">Нет данных</h3>
             `;
           }
-
-        });
       });
     });
 
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       this.scanUrl = tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1);
 
-
-
-      // chrome.storage.local.get([tabs[0].url.substring(0, tabs[0].url.indexOf('/', tabs[0].url.indexOf('/') + 2) + 1)], function(result) {
-      //
-      // })
     })
   },
   components: {
