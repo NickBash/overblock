@@ -2,33 +2,33 @@
   <div id="app">
     <div>
         <transition name="fade" mode="out-in">
-          <div v-if="select == 1" key="1">
-            <h2>Скан web-ресурса</h2>
-            <div>
-              <h3 :class="[text_class]">{{ googleScan }}</h3>
-              <h3 v-else class="text-w">Опасен</h3>
+          <div class="cont">
+            <div v-if="select == 1" key="1">
+              <h2 class="title"><img class="logo" src="./assets/img/protection_128.png" alt=""><span class="title_t">Overblock</span><a
+                href="#"><img class="setting" src="./assets/img/settings.png" alt=""></a></h2>
+              <div>
+                <h3 style="text-align: center" :class="[text_class]">{{ googleScan }}</h3>
+              </div>
+              </div>
+              <a class="analysis" @click="selectCheck" href="#"><b>Провести полный анализ</b></a>
+              <h1>{{ safeBrow }}</h1>
             </div>
-            <a class="analysis" @click="selectCheck" href="#">Провести полный анализ?</a>
-            <h1>{{ safeBrow }}</h1>
-          </div>
-          <div v-if="select == 2" key="2" class="cssload-thecube">
-            <div class="spinner">
-              <div class="rect1"></div>
-              <div class="rect2"></div>
-              <div class="rect3"></div>
-              <div class="rect4"></div>
-              <div class="rect5"></div>
+            <div v-if="select == 2" key="2" class="cssload-thecube">
+              <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+              </div>
             </div>
-          </div>
-          <div v-if="select == 3" key="3" class="graf">
-            <Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>
-            <p> {{ this.warning }} из {{ this.sum }} источников считают этот сайт опасным</p>
+            <div v-if="select == 3" key="3" class="graf">
+              <Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>
+              <p> {{ this.warning }} из {{ this.sum }} источников считают этот сайт опасным</p>
+            </div>
           </div>
         </transition>
     </div>
-    <button @click="OK">OK</button>
-
-
     <!--<input type="text">-->
     <!--<button @click="show == true">Отправить</button>-->
   </div>
@@ -201,12 +201,12 @@ export default {
 
 <style>
 #app {
-  font-family: 'Roboto', sans-serif;
-  text-align: center;
+  font-family: 'Play', sans-serif;
   color: #2c3e50;
   margin-top: 20px;
-  min-width: 280px;
-  max-width: 300px;
+  min-width: 270px;
+  max-width: 330px;
+  padding: 0 30px;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -214,6 +214,31 @@ export default {
 }
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+.cont {
+  width: 270px;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  padding-right: 10px;
+  float: left;
+}
+
+.title {
+  width: 270px;
+  height: 30px;
+  color: black;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: 'Play', sans-serif;
+}
+
+.title_t {
+  float: left;
 }
 
 .graf {
@@ -228,51 +253,74 @@ a{
   text-decoration: none;
 }
 
+.setting {
+  width: 30px;
+  height: auto;
+  float: right;
+  opacity: 0.5;
+}
+
 .text_n {
-  color: white;
-  background: gray;
-  padding: 5px 5px;
+  font-size: 20px;
+  width: 270px;
+  color: #6c757d;
+  background: #f8f9fa;
+  border: 2px solid #6c757d;
+  padding: 5px 0 8px;
   border-radius: 5px;
-  margin: 20px 30px;
+  margin: 30px 0 10px;
 }
 
 .text_g {
-  color: white;
-  background: rgb(66, 184, 131);
-  padding: 5px 5px;
+  font-size: 20px;
+  width: 270px;
+  color: #5EAC24;
+  background: #5EAC2421;
+  border: 2px solid #5EAC24;
+  padding: 5px 0 8px;
   border-radius: 5px;
-  margin: 20px 30px;
+  margin: 30px 0 10px;
 }
 
 .text_w {
-  color: white;
-  background: rgb(255, 49, 57);
-  padding: 5px 5px;
+  font-size: 20px;
+  width: 270px;
+  color: rgb(255, 24, 17);
+  background: rgba(255, 24, 17, 0.1);
+  border: 2px solid rgb(255, 24, 17);
+  padding: 5px 0 8px;
   border-radius: 5px;
-  margin: 20px 30px;
+  margin: 30px 0 10px;
 }
 
 .text_y {
-  color: white;
-  background: #deac16;
-  padding: 5px 5px;
+  font-size: 20px;
+  width: 270px;
+  color: #deac16;
+  background: #deac1623;
+  border: 2px solid #deac16;
+  padding: 5px 0 8px;
   border-radius: 5px;
-  margin: 20px 30px;
+  margin: 30px 0 10px;
 }
 
 .analysis {
-  color: gray;
+  font-size: 16px;
+  width: 270px;
+  color: black;
+  text-align: center;
   display: inline-block;
-  border: 1px solid gray;
-  padding: 8px 20px;
+  border: 2px solid black;
+  padding: 8px 0px;
   border-radius: 5px;
-  margin: 0px 30px 20px;
+  margin: 0px 0 20px;
   transition: .3s;
 }
 
 .analysis:hover {
-  background: gray;
-  color: white;
+  border: 2px solid #5EAC24;
+  background: #C9EEAE;
+  color: #5EAC24;
 }
 
 .spinner {
