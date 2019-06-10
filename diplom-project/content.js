@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(
       sendResponse({farewell: sait});
   });
 
-
+// document.body.innerHTML = `<h3 id="sc1" style="text-align: center" class="text_y">Нежелательное ПО!</h3>`
 
 // chrome.runtime.onConnect.addListener(function(port) {
 //   console.assert(port.name == "address");

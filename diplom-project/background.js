@@ -37,6 +37,7 @@ chrome.runtime.onMessage.addListener(
                 chrome.browserAction.setBadgeText({text: "+"});
                 chrome.browserAction.setBadgeBackgroundColor({color:'green'});
                 console.log('первое')
+
               } else {
                 d.push({status: 1, url: a})
                 localStorage.setItem('overblock', JSON.stringify(d))
@@ -90,6 +91,13 @@ chrome.runtime.onMessage.addListener(
             chrome.browserAction.setBadgeText({text: "-"});
             chrome.browserAction.setBadgeBackgroundColor({color:'yellow'});
 
+            chrome.notifications.create('reminder', {
+              type: 'basic',
+              iconUrl: 'img/well.png',
+              title: 'Внимание!',
+              message: 'Плохая репутация!'
+            }, function(notificationId) {});
+
           } else {
 
             if (localStorage.getItem('overblock') != null) {
@@ -108,6 +116,13 @@ chrome.runtime.onMessage.addListener(
 
             chrome.browserAction.setBadgeText({text: "-"});
             chrome.browserAction.setBadgeBackgroundColor({color:'red'});
+
+            chrome.notifications.create('reminder', {
+              type: 'basic',
+              iconUrl: 'img/warning.png',
+              title: 'Опасность!',
+              message: 'Имеентся вредоносное ПО!'
+            }, function(notificationId) {});
 
           }
         })

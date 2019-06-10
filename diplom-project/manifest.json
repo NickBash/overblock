@@ -13,6 +13,7 @@
   "content_scripts": [
     {
       "matches": [ "*://*/*" ],
+      "css": ["myStyles.css"],
       "js": [ "content.js" ]
     }
   ],
@@ -20,14 +21,18 @@
     "scripts": ["background.js", "axios.min.js"],
     "persistent": false
   },
+  "web_accessible_resources": [
+    "file.html"
+  ],
   "permissions": [
     "activeTab",
     "contextMenus",
     "storage",
     "downloads",
-    "declarativeNetRequest",
     "contentSettings",
-    "debugger"
+    "debugger",
+    "alarms",
+    "notifications"
   ],
   "options_page": "options.html"
 }
