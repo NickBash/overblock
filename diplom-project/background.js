@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(
     var url = request.site.toString() // данные о сайте
     console.log(url)
     function getUrlGoogle(a){
-      axios.post('http://ovapi.ovd.su/api/post-url-scan-google', {
+      axios.post('https://ovapi.ovd.su/api/post-url-scan-google', {
         url: a,
         crossDomain: true,
       })

@@ -10,9 +10,9 @@
                 <h3 id="sc1" style="text-align: center" :class="[text_class]">{{ googleScan }}</h3>
               </div>
               <a class="analysis" @click="selectCheck" href="#"><b>Провести полный анализ</b></a>
-              <h1>{{ safeBrow }}</h1>
             </div>
-            <div v-if="select == 2" key="2" class="cssload-thecube">
+            <div v-if="select === 2" key="2" class="cssload-thecube">
+              <div><a href="#" class="prev" @click="prev">Назад</a></div>
               <div class="spinner">
                 <div class="rect1"></div>
                 <div class="rect2"></div>
@@ -22,13 +22,13 @@
               </div>
             </div>
             <div v-if="select == 3" key="3" class="graf">
+              <div><a href="#" class="prev" @click="prev">Назад</a></div>
               <Doughnut :chart-data="this.datacoll" :height="400" :options="this.options"></Doughnut>
               <p> {{ this.warning }} из {{ this.sum }} источников считают этот сайт опасным</p>
             </div>
           </div>
         </transition>
     </div>
-    <p>{{stat }}</p>
   </div>
 </template>
 
@@ -41,7 +41,6 @@ export default {
   name: 'app',
   data () {
     return {
-      stat: '',
       googleScan: 'Нет информации',
       select: 1,
       text_class: 'text_n',
@@ -83,34 +82,11 @@ export default {
       let str = scan.substring(0, non);
       return str;
     },
-    // getUrlGoogle(safe) {
-    //   console.log(safe)
-    //   axios.post('http://ovapi.ovd.su/api/post-url-scan-google', {
-    //     url: safe,
-    //     crossDomain: true,
-    //   })
-    //     .then(response => {
-    //       console.log(response);
-    //       let data = (response.data);
-    //       console.log(data);
-    //       if (data == "Безопасно!") {
-    //         this.googleScan = data;
-    //         this.text_class = 'text_g';
-    //         console.log('Ok, безопасен');
-    //       } else if (data == 'Фишинговый сайт!' || data == 'Нежелательное программное обеспечение!') {
-    //         this.googleScan = data;
-    //         this.text_class = 'text_y'
-    //       } else {
-    //         this.googleScan = 'Вредоносный!';
-    //         this.text_class = 'text_w';
-    //       }
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //     })
-    // },
+    prev() {
+      this.select = 1
+    },
     getUrl(url) {
-        axios.post('http://ovapi.ovd.su/api/post-url-scan', {
+        axios.post('https://ovapi.ovd.su/api/post-url-scan', {
           url: url,
           apikey: '5ca8277fafc89da750fe37e6aa5640f8de23226b9c35592f74f876be6c020366',
           crossDomain: true,
@@ -227,6 +203,9 @@ export default {
 
 .cont {
   width: 270px;
+}
+.prev {
+  color: #4e91ff;
 }
 
 .logo {
