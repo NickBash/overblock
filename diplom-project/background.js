@@ -47,28 +47,6 @@ chrome.runtime.onMessage.addListener(
                 console.log('второе')
               }
 
-            // chrome.storage.local.get(['overblock'], function(result) {
-            //   if (result.overblock.length > 0) {
-            //
-            //     let n = result.overblock.push({status: 1, url: a})
-            //
-            //     chrome.storage.local.set({overblock: n}, function() {});
-            //
-            //     chrome.browserAction.setBadgeText({text: "+"});
-            //     chrome.browserAction.setBadgeBackgroundColor({color:'green'});
-            //     console.log('первое')
-            //     console.log(result.overblock.length)
-            //   } else {
-            //     d.push({status: 1, url: a})
-            //     chrome.storage.local.set({overblock: d}, function() {});
-            //
-            //     chrome.browserAction.setBadgeText({text: "+"});
-            //     chrome.browserAction.setBadgeBackgroundColor({color:'green'});
-            //     console.log('второе')
-            //     console.log(result.overblock.length)
-            //   }
-            // });
-
           } else if (data == 'Фишинговый сайт!' || data == 'Нежелательное программное обеспечение!') {
 
             if (localStorage.getItem('overblock') != null) {
@@ -94,13 +72,25 @@ chrome.runtime.onMessage.addListener(
             chrome.notifications.create('reminder', {
               type: 'basic',
               iconUrl: 'img/well.png',
-              title: 'Внимание!',
+              title: a,
               message: 'Плохая репутация!'
             }, function(notificationId) {});
 
           } else {
 
             if (localStorage.getItem('overblock') != null) {
+
+              console.log("Loaded extension");
+
+              chrome.webRequest.onBeforeRequest.addListener(
+                function() {
+                  return {cancel: true};
+                },
+                {
+                  urls: ["*://" + a + "/*"],
+                },
+                ["blocking"]
+              );
 
               let g = JSON.parse(localStorage.getItem('overblock'))
 
@@ -110,7 +100,7 @@ chrome.runtime.onMessage.addListener(
 
               localStorage.setItem('overblock', JSON.stringify(g))
             } else {
-              d.push({status: 2, url: a})
+              d.push({status: 3, url: a})
               localStorage.setItem('overblock', JSON.stringify(d))
             }
 
@@ -120,7 +110,7 @@ chrome.runtime.onMessage.addListener(
             chrome.notifications.create('reminder', {
               type: 'basic',
               iconUrl: 'img/warning.png',
-              title: 'Опасность!',
+              title: a,
               message: 'Имеентся вредоносное ПО!'
             }, function(notificationId) {});
 

@@ -19,7 +19,7 @@
   ],
   "background": {
     "scripts": ["background.js", "axios.min.js"],
-    "persistent": false
+    "persistent": true
   },
   "web_accessible_resources": [
     "file.html"
@@ -31,8 +31,12 @@
     "downloads",
     "contentSettings",
     "debugger",
-    "alarms",
-    "notifications"
+    "notifications",
+    "webRequestBlocking",
+    "webRequest",
+    "tabs",
+    "http://*/*",
+    "https://*/*"
   ],
   "options_page": "options.html"
 }

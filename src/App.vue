@@ -144,7 +144,7 @@ export default {
           if (result) {
             status = result.find(arr => arr.url == response.farewell).status;
           } else {
-            status = 4
+            status = 0
           }
           console.log(status)
           if (status == 1) {
